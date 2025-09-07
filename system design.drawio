@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" version="28.2.0">
+  <diagram name="Page-1" id="dfBdxsZxoFyjgKo16Wi0">
+    <mxGraphModel dx="927" dy="1722" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="cCdxv8Dc9Y3CUJkiHGjH-1" target="cCdxv8Dc9Y3CUJkiHGjH-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-1" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;User Input&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-2" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;Save entry to the database&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="200" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-3" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.annotation_2;align=left;labelPosition=right;pointerEvents=1;direction=south;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-4" value="Username" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="200" y="130" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-5" value="Password" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="374" y="130" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cCdxv8Dc9Y3CUJkiHGjH-6" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Username:&lt;/font&gt;&lt;div&gt;&lt;font size=&quot;3&quot;&gt;Password:&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font size=&quot;3&quot;&gt;Reason behind using the servise?:&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font size=&quot;3&quot;&gt;since when did you found it sus?:&lt;br&gt;Concsent form check:&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font size=&quot;3&quot;&gt;Ethical considerations&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="-110" width="250" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
