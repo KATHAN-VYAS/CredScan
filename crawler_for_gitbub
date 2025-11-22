@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""
+CredCrawler V3 - Spidering, Hashing & Email Alerts
+--------------------------------------------------
+Architecture:
+1. SeedManager: Manages BFS Queue (Spidering).
+2. Fetcher: Tor-routed HTTP requests.
+3. Parser: Extracts text AND new links.
+4. Detector: Finds credentials.
+5. Hasher: Securely hashes data before storage.
+6. Alerter: Sends Email notifications.
+"""
+
+import requests
+import re
+import logging
+import time
+import hashlib
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from urllib.parse import urljoin, urlparse
+from datetime import datetime
+
+# === CONFIGURATION ===
+TOR_PROXIES = {
+    'http': 'socks5h://127.0.0.1:9050',  # Ensure this matches your Tor port
+    'https': 'socks5h://127.0.0.1:9050'
+}
+
+# EMAIL CONFIG (Replace with your details)
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SENDER_EMAIL = "kathan61004@gmail.com"
+SENDER_PASSWORD = "yqrs pvrd kblx pugb"
+RECEIVER_EMAIL = "kathan6104@gmail.com"
+
+# === 1. EMAIL ALERT SYSTEM ===
+class EmailAlertSystem:
+    def send_alert(self, url, count):
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = RECEIVER_EMAIL
+        msg['Subject'] = f"🚨 CredCrawler Alert: {count} Leaks Found!"
+
+        body = f"""
+        CRITICAL ALERT
+        --------------
+        The crawler found {count} potential leaked credentials.
+        
+        Source URL: {url}
+        Time: {datetime.now()}
+        
+        Check your local 'leaks.txt' for the hashed data.
+        """
+        msg.attach(MIMEText(body, 'plain'))
+
+        try:
+            server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.send_message(msg)
+            server.quit()
+            print("    >>> [EMAIL SENT] Notification dispatched successfully.")
+        except Exception as e:
+            print(f"    >>> [EMAIL ERROR] Could not send email: {e}")
+
+# === 2. SECURITY: HASHER ===
+class CredentialHasher:
+    """Hashes credentials so we don't store plaintext (Ethical Compliance)."""
+    def hash_cred(self, raw_cred):
+        # Using SHA-256
+        hash_object = hashlib.sha256(raw_cred.encode())
+        return hash_object.hexdigest()
+
+# === 3. SEED MANAGER (FRONTIER) ===
+class SeedManager:
+    def __init__(self, initial_file):
+        self.queue = []
+        self.visited = set()
+        self.load_seeds(initial_file)
+
+    def load_seeds(self, filepath):
+        try:
+            with open(filepath, "r") as f:
+                for line in f:
+                    if line.strip(): self.queue.append(line.strip())
+        except FileNotFoundError:
+            print("Seed file not found, starting empty.")
+
+    def add_url(self, url):
+        # Deduplication logic: Only add if not visited and not already in queue
+        if url not in self.visited and url not in self.queue:
+            self.queue.append(url)
+
+    def get_next_url(self):
+        if self.queue:
+            url = self.queue.pop(0)
+            self.visited.add(url)
+            return url
+        return None
+
+# === 4. FETCHER ===
+class Fetcher:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.proxies.update(TOR_PROXIES)
+        self.session.headers.update({'User-Agent': 'Mozilla/5.0 (Research)'})
+
+    def fetch(self, url):
+        try:
+            # 60s timeout for Tor latency
+            resp = self.session.get(url, timeout=60)
+            if resp.status_code == 200:
+                return resp.text
+        except Exception as e:
+            print(f"    [!] Fetch Failed: {e}")
+        return None
+
+# === 5. PARSER (UPDATED FOR SPIDERING) ===
+class Parser:
+    def parse(self, html, base_url):
+        # Regex to find links (simple version to avoid bs4 dependency if preferred, 
+        # but bs4 is better. Here using Regex for zero-dependency portability if needed)
+        # For robust parsing, stick to BeautifulSoup as used before.
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        # Extract Text
+        text = soup.get_text(separator='\n')
+
+        # Extract Links (Spidering Logic)
+        links = []
+        for a in soup.find_all('a', href=True):
+            # Resolve relative URLs (e.g. "page2.html" -> "http://site.onion/page2.html")
+            full_url = urljoin(base_url, a['href'])
+            links.append(full_url)
+        
+        return text, links
+
+# === 6. DETECTOR ===
+class Detector:
+    def scan(self, text):
+        # Pattern: email:password
+        regex = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}:[^\s]+'
+        return re.findall(regex, text)
+
+# === ORCHESTRATOR ===
+def run_crawler():
+    # Init Modules
+    seeds = SeedManager("seed.txt")
+    fetcher = Fetcher()
+    parser = Parser()
+    detector = Detector()
+    hasher = CredentialHasher()
+    alerter = EmailAlertSystem()
+
+    print("-" * 40)
+    print(" CREDCRAWLER V3 STARTED ")
+    print("-" * 40)
+
+    while True:
+        url = seeds.get_next_url()
+        if not url:
+            print("Queue empty. Crawl finished.")
+            break
+
+        print(f"\n[*] Crawling: {url}")
+        
+        # 1. Fetch
+        html = fetcher.fetch(url)
+        if not html: continue
+
+        # 2. Parse (Get Text + New Links)
+        text, new_links = parser.parse(html, url)
+
+        # 3. Spidering: Add new valid links to queue
+        for link in new_links:
+            # LOGIC: Only follow .onion links or localhost (for testing)
+            if ".onion" in link or "localhost" in link:
+                seeds.add_url(link)
+                # print(f"    -> Added new link: {link}") # Uncomment for debug
+
+        # 4. Detect
+        creds = detector.scan(text)
+
+        if creds:
+            print(f"    >>> [ALERT] Found {len(creds)} credentials!")
+            
+            # 5. Hash & Save
+            with open("leaks.txt", "a") as f:
+                for cred in creds:
+                    hashed = hasher.hash_cred(cred)
+                    f.write(f"{url} | {hashed}\n")
+            print("    >>> [SECURE] Credentials hashed and saved.")
+
+            # 6. Email Alert
+            alerter.send_alert(url, len(creds))
+
+        time.sleep(2) # Politeness
+
+if __name__ == "__main__":
+    run_crawler()
