@@ -29,7 +29,7 @@
 
 1.  **Clone the repository (or download files):**
     ```bash
-    git clone [https://github.com/yourusername/credcrawler.git](https://github.com/yourusername/credcrawler.git)
+    git clone https://github.com/KATHAN-VYAS/CredScan.git
     cd credcrawler
     ```
 
